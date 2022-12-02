@@ -1,0 +1,26 @@
+import { Card, Page, Layout, TextContainer, Heading } from "@shopify/polaris";
+import { TitleBar } from "@shopify/app-bridge-react";
+import NewCustomer from "../components/poscomponents/NewCustomer";
+import { ProductsCard } from "../../../../ecomm-app/web/frontend/components";
+
+export default function HomePage() {
+  const host1 = new URLSearchParams(location.search).get("host");
+  console.log({ host1 });
+  return (
+    <Page narrowWidth>
+      <TitleBar title="App name" primaryAction={null} />
+      <Layout>
+        <Layout.Section>
+          <Card sectioned>
+            <TextContainer spacing="loose">
+              <Heading>Welcome to React Enabled Shopify POS App</Heading>
+              <p> Get Ready to explore the features and capabilities</p>
+            </TextContainer>
+          </Card>
+          <NewCustomer />
+        </Layout.Section>
+        <ProductsCard />
+      </Layout>
+    </Page>
+  );
+}
