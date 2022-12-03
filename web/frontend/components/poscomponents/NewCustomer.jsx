@@ -81,11 +81,13 @@ const NewCustomer = () => {
       },
     });
 
-    console.log({ response });
+    const result = await response.json();
+
+    console.log({ result }, result.payload);
 
     if (response.ok) {
       console.log("customer added successfully");
-      addcustomertocart();
+      addcustomertocart(result.payload);
     } else {
       console.log("error creating customer");
     }

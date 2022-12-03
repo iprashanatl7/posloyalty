@@ -1,6 +1,6 @@
 import { useAuthenticatedFetch } from "../../hooks";
 
-export default accesscartapi = () => {
+export const accesscartapi = () => {
   console.log("fetch cart details");
   const fetch = useAuthenticatedFetch();
   fetch(window.Shopify.routes.root + "cart.js")

@@ -160,7 +160,7 @@ export async function createServer(
     let status = 200;
     let error = null;
     console.log(req.body);
-
+    let customerId;
     try {
       const { Customer } = await import(
         `@shopify/shopify-api/dist/rest-resources/${Shopify.Context.API_VERSION}/index.js`
@@ -172,9 +172,12 @@ export async function createServer(
       customer.phone = req.body.phone;
       customer.last_name = req.body.lastName;
 
-      await customer.save({
+      const result = await customer.save({
         update: true,
       });
+      console.log("customer after save:");
+      console.log("customer id: ", customer.id);
+      customerId = customer.id;
     } catch (e) {
       console.log(`Failed to process products/create: ${e.message}`);
       status = 500;
@@ -182,13 +185,17 @@ export async function createServer(
     }
 
     // try {
-    //   await customerCreator(session, req.body);
+    //   result = await customerCreator(session, req.body);
+    //   console.log({ result });
     // } catch (e) {
     //   console.log(`Failed to process products/create: ${e.message}`);
     //   status = 500;
     //   error = e.message;
     // }
-    res.status(status).send({ success: status === 200, error });
+
+    res
+      .status(status)
+      .json({ success: status === 200, error, payload: customerId });
   });
 
   app.use((req, res, next) => {

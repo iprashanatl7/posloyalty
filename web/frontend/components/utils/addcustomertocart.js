@@ -2,7 +2,7 @@ import createApp from "@shopify/app-bridge";
 import { Cart } from "@shopify/app-bridge/actions";
 import { useAppBridge } from "@shopify/app-bridge-react";
 
-export const addcustomertocart = (customerData) => {
+export const addcustomertocart = (customerID) => {
   const host1 = new URLSearchParams(location.search).get("host");
   console.log({ host1 });
 
@@ -27,15 +27,15 @@ export const addcustomertocart = (customerData) => {
       alert(error);
     });
 
-  // var customerPayload = {
-  //   id: 6703290515774,
-  // };
   var customerPayload = {
-    email: "voisin@gmail.com",
-    firstName: "Sandrine",
-    lastName: "Voisin",
-    note: "First customer of 2019",
+    id: customerID,
   };
+  // var customerPayload = {
+  //   email: "voisin@gmail.com",
+  //   firstName: "Sandrine",
+  //   lastName: "Voisin",
+  //   note: "First customer of 2019",
+  // };
 
   var unsubscriber = cart.subscribe(Cart.Action.UPDATE, function (payload) {
     console.log("[Client] setCustomer", payload);

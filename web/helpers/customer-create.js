@@ -17,9 +17,9 @@ const CREATE_CUSTOMER_MUTATION = `
 export default async function customerCreator(session, customerData) {
   console.log("customer - create function");
   const client = new Shopify.Clients.Graphql(session.shop, session.accessToken);
-
+  let response = null;
   try {
-    await client.query({
+    response = await client.query({
       data: {
         query: CREATE_CUSTOMER_MUTATION,
         variables: {
@@ -34,6 +34,7 @@ export default async function customerCreator(session, customerData) {
       },
     });
     console.log("Success creating customer");
+    return response.body.data.customerCreate.customer;
   } catch (error) {
     console.log("error creating customer");
     if (error instanceof Shopify.Errors.GraphqlQueryError) {
