@@ -226,7 +226,8 @@ export async function createServer(
 
   app.use("/*", async (req, res, next) => {
     if (typeof req.query.shop !== "string") {
-      res.status(500);
+      //res.status(500);
+      res.status(404);
       return res.send("No shop provided");
     }
 
