@@ -257,7 +257,7 @@ const NewCustomer = ({ existingUser }) => {
             onChange={(value, id) => inputchangeHandler(value, id)}
           />
           <TextField
-            label="Phone number"
+            label="Loyalty Phone number"
             id="phone"
             type="tel"
             error={inputPhoneData?.errorMessage}

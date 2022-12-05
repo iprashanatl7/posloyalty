@@ -2,7 +2,8 @@ import { Shopify } from "@shopify/shopify-api";
 
 export default async function redirectToAuth(req, res, app) {
   if (!req.query.shop) {
-    res.status(500);
+    //res.status(500);
+    res.status(404);
     return res.send("No shop provided");
   }
 

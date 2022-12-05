@@ -149,6 +149,70 @@ export async function createServer(
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
+  app.get(`/api/customer/search/:searchtxt`, async (req, res) => {
+
+    try {
+      
+    const session = await Shopify.Utils.loadCurrentSession(
+      req,
+      res,
+      app.get("use-online-tokens")
+    );
+    let status = 200;
+    let error = null;
+    const { Customer } = await import(
+      `@shopify/shopify-api/dist/rest-resources/${Shopify.Context.API_VERSION}/index.js`
+    );
+
+    const query = req.params.searchtxt;
+    if(query == null){
+        throw new Error("Bad request");
+    }
+    console.log(`Search text : ${query}`);
+    const userData= await Customer.search({
+      session: session,
+      query: `*${query}*`,
+    })
+    if(userData == null){
+      throw new Error("Not Found");
+    }
+    var retVal = getCustomerInfo(userData); ;
+    console.log(`respose ---> ${JSON.stringify(retVal)}`);
+    res.status(200).send(retVal);
+      console.log(`Search success, returned status code 200`);
+    } catch (e) {
+      console.log(`Failed to process search: ${e.message}`);
+      res.status(500).send(e.message);
+    }
+
+
+  });
+  
+  function getCustomerInfo(userData){
+    if(userData == null){
+        throw new Error("Not Found");
+    }
+    var customers = userData.customers;
+    var retVal = {};
+    var key = 'customers';
+    retVal[key] = [];
+    for (var id in customers) {
+        var data = {
+          "id" : `"${customers[id].id}"`,
+          "first_name" : `"${customers[id].first_name}"`,
+          "last_name" : `"${customers[id].last_name}"`,
+          "phone" : `"${customers[id].phone}"`,
+          "email" : `"${customers[id].email}"`,
+          "marketing_opt_in_level" : `"${customers[id].marketing_opt_in_level}"`,
+          "email_marketing_consent" : `"${JSON.stringify(customers[id].email_marketing_consent)}"`,
+          "loyalty_opt_in" : `"${JSON.stringify(customers[id].id!==undefined?customers[id].loyalty_opt_in:{})}"`,
+        }
+        retVal[key].push(data);
+    }
+    return retVal;
+}
+
+
   app.post("/api/customer/create", async (req, res) => {
     console.log("inside create customer api");
     const session = await Shopify.Utils.loadCurrentSession(
@@ -318,7 +382,8 @@ export async function createServer(
 
   app.use("/*", async (req, res, next) => {
     if (typeof req.query.shop !== "string") {
-      res.status(500);
+      //res.status(500);
+      res.status(404);
       return res.send("No shop provided");
     }
 
