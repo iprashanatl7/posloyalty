@@ -198,6 +198,98 @@ export async function createServer(
       .json({ success: status === 200, error, payload: customerId });
   });
 
+  app.get("/api/customer/getdata", async (req, res) => {
+    console.log("inside get customer api");
+    const session = await Shopify.Utils.loadCurrentSession(
+      req,
+      res,
+      app.get("use-online-tokens")
+    );
+    console.log({ session });
+    console.log("request query:", req.query);
+    const userId = req.query.customerId;
+    let status = 200;
+    let error = null;
+    console.log({ userId });
+    let customerInfo = null;
+    try {
+      const { Customer } = await import(
+        `@shopify/shopify-api/dist/rest-resources/${Shopify.Context.API_VERSION}/index.js`
+      );
+
+      const customer = await Customer.find({
+        session: session,
+        id: userId,
+      });
+
+      customerInfo = customer;
+      console.log({ customer });
+    } catch (e) {
+      console.log(`Failed to process customer/get: ${e.message}`);
+      status = 500;
+      error = e.message;
+    }
+
+    const customerData = {
+      firstName: customerInfo?.first_name || " ",
+      lastName: customerInfo?.last_name || "",
+      email: customerInfo?.email || "",
+      phone: customerInfo?.phone || "",
+      id: customerInfo?.id || "",
+    };
+
+    res
+      .status(status)
+      .json({ success: status === 200, error, payload: customerData });
+  });
+
+  app.post("/api/customer/edit", async (req, res) => {
+    console.log("inside edit customer api");
+    const session = await Shopify.Utils.loadCurrentSession(
+      req,
+      res,
+      app.get("use-online-tokens")
+    );
+    console.log({ session });
+    console.log("request query:", req.query);
+    let status = 200;
+    let error = null;
+    const userId = req.query.customerId;
+    let customerInfo;
+    try {
+      const { Customer } = await import(
+        `@shopify/shopify-api/dist/rest-resources/${Shopify.Context.API_VERSION}/index.js`
+      );
+
+      const customer = await Customer.find({
+        session: session,
+        id: userId,
+      });
+      console.log("customer before save:", customer);
+
+      customer.first_name = req.body.firstName;
+      customer.email = req.body.email;
+      customer.phone = req.body.phone;
+      customer.last_name = req.body.lastName;
+
+      const result = await customer.save({
+        update: true,
+      });
+      console.log("customer after save:", customer);
+      console.log("customer id: ", customer.id);
+
+      console.log({ customer });
+    } catch (e) {
+      console.log(`Failed to process customer/get: ${e.message}`);
+      status = 500;
+      error = e.message;
+    }
+
+    res
+      .status(status)
+      .json({ success: status === 200, error, payload: userId });
+  });
+
   app.use((req, res, next) => {
     const shop = Shopify.Utils.sanitizeShop(req.query.shop);
     if (Shopify.Context.IS_EMBEDDED_APP && shop) {

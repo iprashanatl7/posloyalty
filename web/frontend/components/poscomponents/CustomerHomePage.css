@@ -1,0 +1,20 @@
+.search-bar {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin: 1px;
+  flex: 1 0 auto;
+  border: 1px solid #000000;
+}
+
+.search-bar span {
+  margin-right: 1px;
+  border: none;
+}
+
+.search-bar div {
+  flex-grow: 1;
+  border: none;
+}

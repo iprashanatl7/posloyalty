@@ -1,7 +1,7 @@
 import { Card, Page, Layout, TextContainer, Heading } from "@shopify/polaris";
 import { TitleBar } from "@shopify/app-bridge-react";
-import NewCustomer from "../components/poscomponents/NewCustomer";
 import { ProductsCard } from "../../../../ecomm-app/web/frontend/components";
+import CustomerHomePage from "../components/poscomponents/CustomerHomePage";
 
 export default function HomePage() {
   const host1 = new URLSearchParams(location.search).get("host");
@@ -17,9 +17,9 @@ export default function HomePage() {
               <p> Get Ready to explore the features and capabilities</p>
             </TextContainer>
           </Card>
-          <NewCustomer />
+          <CustomerHomePage />
         </Layout.Section>
-        <ProductsCard />
+        {/* <ProductsCard /> */}
       </Layout>
     </Page>
   );
