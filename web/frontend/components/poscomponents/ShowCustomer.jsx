@@ -1,4 +1,5 @@
 const ShowCustomer = ({ user }) => {
+  console.log("showcustomer called");
   return (
     <h1>
       Customer

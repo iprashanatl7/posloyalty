@@ -7,6 +7,7 @@ import SearchCustomer from "./SearchCustomer";
 
 const CustomerHomePage = () => {
   const [searchInput, setSearchInput] = useState("");
+  const [search, setSearch] = useState("");
   const navigate = useNavigate();
 
   const searchInputChangeHandler = (value, id) => {
@@ -32,14 +33,13 @@ const CustomerHomePage = () => {
               placeholder="Search Email Phone Name"
             />
           </div>
+          <Button onClick={() => setSearch(searchInput)}>Search</Button>
         </div>
       </Card>
       <Button fullWidth onClick={() => navigate("/addcustomer")}>
         Add customer
       </Button>
-      <Card sectioned>
-        <SearchCustomer />
-      </Card>
+      <Card sectioned>{search && <SearchCustomer searchInput={search} />}</Card>
     </Card>
   );
 };

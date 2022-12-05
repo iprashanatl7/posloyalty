@@ -46,6 +46,8 @@ const NewCustomer = ({ existingUser }) => {
     lastName: inputLastNameData?.inputField,
     email: inputEmailData?.inputField,
     phone: inputPhoneData?.inputField,
+    loyaltyInd: isAloAccessCheckedIn,
+    marketingInd: isMarketingEmailsChecked,
   };
   console.log({ customerData });
   useEffect(() => {

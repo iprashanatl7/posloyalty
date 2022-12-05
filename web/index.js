@@ -10,8 +10,6 @@ import verifyRequest from "./middleware/verify-request.js";
 import { setupGDPRWebHooks } from "./gdpr.js";
 import productCreator from "./helpers/product-creator.js";
 import redirectToAuth from "./helpers/redirect-to-auth.js";
-import customerCreator from "./helpers/customer-create.js";
-import { BillingInterval } from "./helpers/ensure-billing.js";
 import { AppInstallations } from "./app_installations.js";
 
 const USE_ONLINE_TOKENS = false;
@@ -150,68 +148,64 @@ export async function createServer(
   app.use(express.urlencoded({ extended: true }));
 
   app.get(`/api/customer/search/:searchtxt`, async (req, res) => {
-
+    console.log("inside /api/customer/search/:searchtxt API");
     try {
-      
-    const session = await Shopify.Utils.loadCurrentSession(
-      req,
-      res,
-      app.get("use-online-tokens")
-    );
-    let status = 200;
-    let error = null;
-    const { Customer } = await import(
-      `@shopify/shopify-api/dist/rest-resources/${Shopify.Context.API_VERSION}/index.js`
-    );
+      const session = await Shopify.Utils.loadCurrentSession(
+        req,
+        res,
+        app.get("use-online-tokens")
+      );
+      let status = 200;
+      let error = null;
+      const { Customer } = await import(
+        `@shopify/shopify-api/dist/rest-resources/${Shopify.Context.API_VERSION}/index.js`
+      );
 
-    const query = req.params.searchtxt;
-    if(query == null){
+      const query = req.params.searchtxt;
+      if (query == null) {
         throw new Error("Bad request");
-    }
-    console.log(`Search text : ${query}`);
-    const userData= await Customer.search({
-      session: session,
-      query: `*${query}*`,
-    })
-    if(userData == null){
-      throw new Error("Not Found");
-    }
-    var retVal = getCustomerInfo(userData); ;
-    console.log(`respose ---> ${JSON.stringify(retVal)}`);
-    res.status(200).send(retVal);
+      }
+      console.log(`Search text : ${query}`);
+      const userData = await Customer.search({
+        session: session,
+        query: `*${query}*`,
+      });
+      if (userData == null) {
+        throw new Error("Not Found");
+      }
+      var retVal = getCustomerInfo(userData);
+      // console.log(`respose ---> ${JSON.stringify(retVal)}`);
+      res.status(200).json({ success: status === 200, error, payload: retVal });
       console.log(`Search success, returned status code 200`);
     } catch (e) {
       console.log(`Failed to process search: ${e.message}`);
       res.status(500).send(e.message);
     }
-
-
   });
-  
-  function getCustomerInfo(userData){
-    if(userData == null){
-        throw new Error("Not Found");
+
+  function getCustomerInfo(userData) {
+    if (userData == null) {
+      throw new Error("Not Found");
     }
     var customers = userData.customers;
     var retVal = {};
-    var key = 'customers';
+    var key = "customers";
     retVal[key] = [];
     for (var id in customers) {
-        var data = {
-          "id" : `"${customers[id].id}"`,
-          "first_name" : `"${customers[id].first_name}"`,
-          "last_name" : `"${customers[id].last_name}"`,
-          "phone" : `"${customers[id].phone}"`,
-          "email" : `"${customers[id].email}"`,
-          "marketing_opt_in_level" : `"${customers[id].marketing_opt_in_level}"`,
-          "email_marketing_consent" : `"${JSON.stringify(customers[id].email_marketing_consent)}"`,
-          "loyalty_opt_in" : `"${JSON.stringify(customers[id].id!==undefined?customers[id].loyalty_opt_in:{})}"`,
-        }
-        retVal[key].push(data);
+      var data = {
+        id: customers[id].id,
+        first_name: customers[id].first_name,
+        last_name: customers[id].last_name,
+        phone: customers[id].phone,
+        email: customers[id].email,
+        marketing_opt_in_level: customers[id].marketing_opt_in_level,
+        email_marketing_consent: customers[id].email_marketing_consent,
+        loyalty_opt_in: {},
+      };
+      retVal[key].push(data);
     }
     return retVal;
-}
-
+  }
 
   app.post("/api/customer/create", async (req, res) => {
     console.log("inside create customer api");
@@ -235,11 +229,24 @@ export async function createServer(
       customer.email = req.body.email;
       customer.phone = req.body.phone;
       customer.last_name = req.body.lastName;
+      if (req.body.marketingInd) {
+        customer.email_marketing_consent = {
+          state: "subscribed",
+          opt_in_level: "single_opt_in",
+          consent_updated_at: new Date().toISOString(),
+        };
+      } else {
+        customer.email_marketing_consent = {
+          state: "not subscribed",
+          opt_in_level: "single_opt_in",
+          consent_updated_at: null,
+        };
+      }
 
       const result = await customer.save({
         update: true,
       });
-      console.log("customer after save:");
+      console.log("customer after save:", customer);
       console.log("customer id: ", customer.id);
       customerId = customer.id;
     } catch (e) {
@@ -300,6 +307,12 @@ export async function createServer(
       email: customerInfo?.email || "",
       phone: customerInfo?.phone || "",
       id: customerInfo?.id || "",
+      marketingInd: `${
+        customerInfo?.email_marketing_consent.state === "subscribed"
+          ? true
+          : false
+      }`,
+      loyaltyInd: true,
     };
 
     res
@@ -335,6 +348,19 @@ export async function createServer(
       customer.email = req.body.email;
       customer.phone = req.body.phone;
       customer.last_name = req.body.lastName;
+      if (req.body.marketingInd) {
+        customer.email_marketing_consent = {
+          state: "subscribed",
+          opt_in_level: "single_opt_in",
+          consent_updated_at: new Date().toISOString(),
+        };
+      } else {
+        customer.email_marketing_consent = {
+          state: "not subscribed",
+          opt_in_level: "single_opt_in",
+          consent_updated_at: null,
+        };
+      }
 
       const result = await customer.save({
         update: true,
