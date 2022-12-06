@@ -198,6 +198,43 @@ export async function createServer(
       .json({ success: status === 200, error, payload: customerId });
   });
 
+
+  app.post("/pos-extension-api/promotions", async (req, res) => {
+    console.log("Inside get Promotions");
+    //res.send('Hello from the server!');
+    const action = {
+      type: "flat_discount",
+      title: "Add $0.00 discount",
+      description: "-1000 points",
+      action_id: "123ABC",
+      value: "0",
+    }
+  
+    const promotions = {
+      type: "simple_action_list",
+      points_label: "Access Plus",
+      points_balance: "125",
+      actions: []
+    };
+  
+    promotions.actions.push(action);
+
+    res.status(200).json(promotions);
+  });
+  
+  
+  app.post("/pos-extension-api/perform_action", async (req, res) => {
+    console.log("Perform Promotion apply action");
+    res.sendStatus(200);
+  });
+  
+  app.post("/pos-extension-api/revert_action", async (req, res) => {
+    console.log("Perform Promotion revert action");
+    res.sendStatus(200);
+  
+  });
+
+
   app.use((req, res, next) => {
     const shop = Shopify.Utils.sanitizeShop(req.query.shop);
     if (Shopify.Context.IS_EMBEDDED_APP && shop) {
