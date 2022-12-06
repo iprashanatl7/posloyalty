@@ -1,10 +1,23 @@
 import { Card, Page, Layout, TextContainer, Heading } from "@shopify/polaris";
 import { TitleBar } from "@shopify/app-bridge-react";
 import CustomerHomePage from "../components/poscomponents/CustomerHomePage";
+import createApp from "@shopify/app-bridge";
+import { config } from "../components/utils/config";
+import { Cart, Toast } from "@shopify/app-bridge/actions";
 
 export default function HomePage() {
-  const host1 = new URLSearchParams(location.search).get("host");
-  console.log({ host1 });
+  let cartData;
+  const app = createApp(config);
+  let cart = Cart.create(app);
+  let unsubscriber = cart.subscribe(Cart.Action.UPDATE, function (payload) {
+    console.log("[Client] fetchCart", payload);
+    cartData = payload;
+    unsubscriber();
+  });
+
+  cart.dispatch(Cart.Action.FETCH);
+  console.log(cartData);
+
   return (
     <Page narrowWidth>
       <TitleBar title="Add Loyalty Customer" primaryAction={null} />

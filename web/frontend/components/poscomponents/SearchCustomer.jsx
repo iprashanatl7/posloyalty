@@ -3,10 +3,9 @@ import { Card, Button, Icon } from "@shopify/polaris";
 import { useEffect } from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useAuthenticatedFetch } from "../hooks";
 import ShowCustomer from "./ShowCustomer";
 import { CircleInformationMajor } from "@shopify/polaris-icons";
-
+import { useAuthenticatedFetch } from "../../hooks";
 const CUSTOMERS = [
   {
     id: 6704005579070,

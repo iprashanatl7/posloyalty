@@ -13,6 +13,9 @@ import { addcustomertocart } from "../utils/addcustomertocart";
 import "./NewCustomer.css";
 import { useNavigate } from "@shopify/app-bridge-react";
 import { useEffect } from "react";
+import createApp from "@shopify/app-bridge";
+import { Pos } from "@shopify/app-bridge/actions";
+import { config } from "../utils/config";
 
 const NewCustomer = ({ existingUser }) => {
   console.log(existingUser);
@@ -40,6 +43,8 @@ const NewCustomer = ({ existingUser }) => {
   const [isInputValid, setIsinputValid] = useState("false");
   const fetch = useAuthenticatedFetch();
   const navigate = useNavigate();
+  const app = createApp(config);
+  const pos = Pos.create(app);
 
   const customerData = {
     firstName: inputFirstNameData?.inputField,
@@ -132,6 +137,7 @@ const NewCustomer = ({ existingUser }) => {
     if (response.ok) {
       console.log("customer added successfully");
       addcustomertocart(result.payload);
+      pos.dispatch(Pos.Action.CLOSE);
     } else {
       console.log("error creating customer");
     }
@@ -225,13 +231,13 @@ const NewCustomer = ({ existingUser }) => {
   };
 
   const handleCancel = () => {
-    navigate("/");
+    pos.dispatch(Pos.Action.CLOSE);
   };
 
   return (
     <Card sectioned>
       <div className="top-actions">
-        <Button onClick={() => navigate("/")}>Cancel</Button>
+        <Button onClick={handleCancel}>Cancel</Button>
         <Button onClick={handleSubmit}>Save & Add to Cart</Button>
       </div>
       <Form>

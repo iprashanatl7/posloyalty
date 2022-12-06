@@ -1,16 +1,10 @@
 import createApp from "@shopify/app-bridge";
 import { Cart } from "@shopify/app-bridge/actions";
 import { useAppBridge } from "@shopify/app-bridge-react";
-
+import { config } from "./config";
 export const addcustomertocart = (customerID) => {
   const host1 = new URLSearchParams(location.search).get("host");
   console.log({ host1 });
-
-  const config = {
-    apiKey: "e2f25f121d53b3855ff03984e211d242",
-    host: new URLSearchParams(location.search).get("host"),
-    shopOrigin: "mytestforpos.myshopify.com",
-  };
 
   const app = createApp(config);
   var cart = Cart.create(app);
