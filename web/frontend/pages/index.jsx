@@ -4,19 +4,30 @@ import CustomerHomePage from "../components/poscomponents/CustomerHomePage";
 import createApp from "@shopify/app-bridge";
 import { config } from "../components/utils/config";
 import { Cart, Toast } from "@shopify/app-bridge/actions";
+import { useAppBridgeState } from "@shopify/app-bridge-react";
+import { useNavigate } from "@shopify/app-bridge-react";
 
 export default function HomePage() {
-  let cartData;
+  const myCart = useAppBridgeState("cart");
+  console.log("mycart:", myCart);
+  let cartCustId;
   const app = createApp(config);
   let cart = Cart.create(app);
+  const navigate = useNavigate();
   let unsubscriber = cart.subscribe(Cart.Action.UPDATE, function (payload) {
-    console.log("[Client] fetchCart", payload);
-    cartData = payload;
+    console.log("[Client] fetchCart mycart", payload.data.customer.id);
     unsubscriber();
+    cartCustId = payload.data.customer.id;
+    const newRoute = `/editcustomer/?customerId=${cartCustId}`;
+    navigate(newRoute);
   });
 
   cart.dispatch(Cart.Action.FETCH);
-  console.log(cartData);
+  if (cartCustId) {
+    console.log("routing to next page");
+    const newRoute = `/editcustomer/?customerId=${cartCustId}`;
+    navigate(newRoute);
+  }
 
   return (
     <Page narrowWidth>
@@ -29,7 +40,7 @@ export default function HomePage() {
               <p> Get Ready to explore the features and capabilities</p>
             </TextContainer> */}
           </Card>
-          <CustomerHomePage />
+          <CustomerHomePage userId={cartCustId} />
         </Layout.Section>
       </Layout>
     </Page>
