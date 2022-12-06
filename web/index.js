@@ -250,7 +250,7 @@ export async function createServer(
       console.log("customer id: ", customer.id);
       customerId = customer.id;
     } catch (e) {
-      console.log(`Failed to process products/create: ${e.message}`);
+      console.log(`Failed to process customer/create: ${e.message}`);
       status = 500;
       error = e.message;
     }
@@ -269,7 +269,6 @@ export async function createServer(
       .json({ success: status === 200, error, payload: customerId });
   });
 
-
   app.post("/pos-extension-api/promotions", async (req, res) => {
     console.log("Inside get Promotions");
     //res.send('Hello from the server!');
@@ -279,30 +278,28 @@ export async function createServer(
       description: "-1000 points",
       action_id: "123ABC",
       value: "0",
-    }
-  
+    };
+
     const promotions = {
       type: "simple_action_list",
       points_label: "Access Plus",
       points_balance: "125",
-      actions: []
+      actions: [],
     };
-  
+
     promotions.actions.push(action);
 
     res.status(200).json(promotions);
   });
-  
-  
+
   app.post("/pos-extension-api/perform_action", async (req, res) => {
     console.log("Perform Promotion apply action");
     res.sendStatus(200);
   });
-  
+
   app.post("/pos-extension-api/revert_action", async (req, res) => {
     console.log("Perform Promotion revert action");
     res.sendStatus(200);
-  
   });
 
   app.get("/api/customer/getdata", async (req, res) => {

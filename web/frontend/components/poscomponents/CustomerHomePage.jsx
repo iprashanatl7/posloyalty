@@ -5,8 +5,7 @@ import { useState } from "react";
 import "./CustomerHomePage.css";
 import SearchCustomer from "./SearchCustomer";
 
-const CustomerHomePage = ({ userId }) => {
-  console.log("Customer Page userId:", userId);
+const CustomerHomePage = () => {
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const navigate = useNavigate();

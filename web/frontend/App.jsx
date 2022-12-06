@@ -1,7 +1,6 @@
 import { BrowserRouter } from "react-router-dom";
 import Routes from "./Routes";
 import { config } from "./components/utils/config";
-import { Provider } from "@shopify/app-bridge-react";
 
 import {
   AppBridgeProvider,
@@ -19,9 +18,7 @@ export default function App() {
       <BrowserRouter>
         <AppBridgeProvider>
           <QueryProvider>
-            <Provider config={config}>
-              <Routes pages={pages} />
-            </Provider>
+            <Routes pages={pages} />
           </QueryProvider>
         </AppBridgeProvider>
       </BrowserRouter>
