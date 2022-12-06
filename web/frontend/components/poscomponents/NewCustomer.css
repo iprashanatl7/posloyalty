@@ -1,0 +1,14 @@
+.top-actions {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.check-box-options {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

@@ -15,7 +15,8 @@
     "@shopify/app": "3.23.0",
     "@shopify/app-bridge": "^3.4.3",
     "@shopify/app-bridge-utils": "^3.4.3",
-    "@shopify/cli": "3.23.0"
+    "@shopify/cli": "3.23.0",
+    "react-router-dom": "^6.4.4"
   },
   "author": "Prashant.m"
 }

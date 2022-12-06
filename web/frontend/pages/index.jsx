@@ -1,6 +1,6 @@
 import { Card, Page, Layout, TextContainer, Heading } from "@shopify/polaris";
 import { TitleBar } from "@shopify/app-bridge-react";
-import NewCustomer from "../components/poscomponents/NewCustomer";
+import CustomerHomePage from "../components/poscomponents/CustomerHomePage";
 
 export default function HomePage() {
   const host1 = new URLSearchParams(location.search).get("host");
@@ -11,12 +11,12 @@ export default function HomePage() {
       <Layout>
         <Layout.Section>
           <Card sectioned>
-{/*             <TextContainer spacing="loose">
+            {/*             <TextContainer spacing="loose">
               <Heading>Welcome to React Enabled Shopify POS App</Heading>
               <p> Get Ready to explore the features and capabilities</p>
             </TextContainer> */}
           </Card>
-          <NewCustomer />
+          <CustomerHomePage />
         </Layout.Section>
       </Layout>
     </Page>
