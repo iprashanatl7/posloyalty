@@ -2,8 +2,8 @@ import { Card } from "@shopify/polaris";
 import NewCustomer from "../../components/poscomponents/NewCustomer";
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
-import { useAuthenticatedFetch } from "../../../../../ecomm-app/web/frontend/hooks";
 import { useState } from "react";
+import { useAuthenticatedFetch } from "../../hooks";
 
 const EditCustomerPage = () => {
   const { search } = useLocation();
