@@ -147,6 +147,47 @@ export async function createServer(
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
+  app.get("/api/customer/loyalty/:id", async (req, res) => {
+   
+    let status = 200;
+    let error = null;
+    try{
+      const session = await Shopify.Utils.loadCurrentSession(
+        req,
+        res,
+        app.get("use-online-tokens")
+      );
+      const customerId = req.params.id;
+      if (customerId == null) {
+        throw new Error("Bad request");
+      }
+      console.log(`Getting meta data for customer : ${customerId}`);
+      const { Metafield } = await import(
+        `@shopify/shopify-api/dist/rest-resources/${Shopify.Context.API_VERSION}/index.js`
+      );
+      const meta_response = await Metafield.all({
+        session: session,
+        metafield: {"owner_id": "6228080197806", "owner_resource": "customers"},
+      });
+      if (meta_response == null) {
+        throw new Error("No meta data");
+      }
+      const loyaltyInfoMap = new Map();
+      for (var id in meta_response) {
+        loyaltyInfoMap.set( meta_response[id].key, meta_response[id].value);
+      }
+      var response = {
+        "loyalty_info" : Object.fromEntries(loyaltyInfoMap)
+      }
+      console.log(response);
+      res.status(200).json({ success: status === 200, error, payload: response });
+    }catch(e){
+      console.log(`Error while retrieving the metadata>${e.message}`);
+      res.status(500).send(e.message);
+    }
+    
+  });
+
   app.get(`/api/customer/search/:searchtxt`, async (req, res) => {
     console.log("inside /api/customer/search/:searchtxt API");
     try {
@@ -175,7 +216,7 @@ export async function createServer(
       }
       console.log(`-----> user datat${JSON.stringify(userData)}`);
       var retVal = getCustomerInfo(userData);
-      console.log(`respose ---> ${JSON.stringify(retVal)}`);
+      console.log(retVal);
       res.status(200).json({ success: status === 200, error, payload: retVal });
       console.log(`Search success, returned status code 200`);
     } catch (e) {
