@@ -151,33 +151,21 @@ export async function createServer(
    
     let status = 200;
     let error = null;
+    
     try{
       const session = await Shopify.Utils.loadCurrentSession(
         req,
         res,
         app.get("use-online-tokens")
       );
-      const customerId = req.params.id;
+
+      var customerId = req.params.id;
       if (customerId == null) {
         throw new Error("Bad request");
       }
-      console.log(`Getting meta data for customer : ${customerId}`);
-      const { Metafield } = await import(
-        `@shopify/shopify-api/dist/rest-resources/${Shopify.Context.API_VERSION}/index.js`
-      );
-      const meta_response = await Metafield.all({
-        session: session,
-        metafield: {"owner_id": customerId, "owner_resource": "customers"},
-      });
-      if (meta_response == null) {
-        throw new Error("No meta data");
-      }
-      const loyaltyInfoMap = new Map();
-      for (var id in meta_response) {
-        loyaltyInfoMap.set( meta_response[id].key, meta_response[id].value);
-      }
+ 
       var response = {
-        "loyalty_info" : Object.fromEntries(loyaltyInfoMap)
+        loyaltyInfo:  await getLoyaltyInfo(session,customerId)
       }
       console.log(response);
       res.status(200).json({ success: status === 200, error, payload: response });
@@ -188,6 +176,7 @@ export async function createServer(
     
   });
 
+  
   app.get(`/api/customer/search/:searchtxt`, async (req, res) => {
     console.log("inside /api/customer/search/:searchtxt API");
     try {
@@ -368,7 +357,7 @@ export async function createServer(
       status = 500;
       error = e.message;
     }
-
+    
     const customerData = {
       firstName: customerInfo?.first_name || " ",
       lastName: customerInfo?.last_name || "",
@@ -381,12 +370,39 @@ export async function createServer(
           : false
       }`,
       loyaltyInd: true,
+      loyaltyInfo : await getLoyaltyInfo(session,customerInfo.id),
     };
-
+    console.log({ customerData });
     res
       .status(status)
       .json({ success: status === 200, error, payload: customerData });
   });
+
+  async function getLoyaltyInfo(session, customerId){
+    
+    if (customerId == null || session == null ) {
+      console.log("No session or customer info")
+      return "{}";
+    }
+    console.log(`Getting meta data for customer : ${customerId}`);
+    const { Metafield } = await import(
+      `@shopify/shopify-api/dist/rest-resources/${Shopify.Context.API_VERSION}/index.js`
+    );
+    const meta_response = await Metafield.all({
+      session: session,
+      metafield: {"owner_id": customerId, "owner_resource": "customers"},
+    });
+    if (meta_response == null) {
+      return "{}";
+    }
+    const loyaltyInfoMap = new Map();
+    for (var id in meta_response) {
+      loyaltyInfoMap.set( meta_response[id].key, meta_response[id].value);
+    }
+    var response =  Object.fromEntries(loyaltyInfoMap);
+    return response;
+  }
+
 
   app.post("/api/customer/edit", async (req, res) => {
     console.log("inside edit customer api");
