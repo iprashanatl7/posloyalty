@@ -167,7 +167,7 @@ export async function createServer(
       );
       const meta_response = await Metafield.all({
         session: session,
-        metafield: {"owner_id": "6228080197806", "owner_resource": "customers"},
+        metafield: {"owner_id": customerId, "owner_resource": "customers"},
       });
       if (meta_response == null) {
         throw new Error("No meta data");
