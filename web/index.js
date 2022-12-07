@@ -173,8 +173,9 @@ export async function createServer(
       if (userData == null) {
         throw new Error("Not Found");
       }
+      console.log(`-----> user datat${JSON.stringify(userData)}`);
       var retVal = getCustomerInfo(userData);
-      // console.log(`respose ---> ${JSON.stringify(retVal)}`);
+      console.log(`respose ---> ${JSON.stringify(retVal)}`);
       res.status(200).json({ success: status === 200, error, payload: retVal });
       console.log(`Search success, returned status code 200`);
     } catch (e) {
@@ -235,14 +236,7 @@ export async function createServer(
           opt_in_level: "single_opt_in",
           consent_updated_at: new Date().toISOString(),
         };
-      } else {
-        customer.email_marketing_consent = {
-          state: "not subscribed",
-          opt_in_level: "single_opt_in",
-          consent_updated_at: null,
-        };
       }
-
       const result = await customer.save({
         update: true,
       });
@@ -381,19 +375,25 @@ export async function createServer(
       customer.email = req.body.email;
       customer.phone = req.body.phone;
       customer.last_name = req.body.lastName;
+      // let emailMarketingConsent;
       if (req.body.marketingInd) {
-        customer.email_marketing_consent = {
-          state: "subscribed",
-          opt_in_level: "single_opt_in",
-          consent_updated_at: new Date().toISOString(),
-        };
-      } else {
-        customer.email_marketing_consent = {
-          state: "not subscribed",
-          opt_in_level: "single_opt_in",
-          consent_updated_at: null,
-        };
+        customer.email_marketing_consent.state = "subscribed";
+        // customer.email_marketing_consent.opt_in_level = "single_opt_in";
+        // customer.email_marketing_consent_updated_at = new Date().toISOString();
+        // emailMarketingConsent = {
+        //   state: "subscribed",
+        //   opt_in_level: "single_opt_in",
+        //   consent_updated_at: new Date().toISOString(),
+        // };
       }
+      // else {
+      //   const emailMarketingConsent = {
+      //     state: "not_subscribed",
+      //     opt_in_level: "single_opt_in",
+      //     consent_updated_at: null,
+      //   };
+      //   customer.email_marketing_consent = { ...emailMarketingConsent };
+      // }
 
       const result = await customer.save({
         update: true,

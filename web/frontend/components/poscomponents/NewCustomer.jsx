@@ -55,6 +55,7 @@ const NewCustomer = ({ existingUser }) => {
     marketingInd: isMarketingEmailsChecked,
   };
   console.log({ customerData });
+
   useEffect(() => {
     setInputFirstName((prevValue) => {
       return { ...prevValue, inputField: existingUser?.firstName || "" };
@@ -67,6 +68,9 @@ const NewCustomer = ({ existingUser }) => {
     });
     setInputPhone((prevValue) => {
       return { ...prevValue, inputField: existingUser?.phone || "" };
+    });
+    setIsMarketingEmailsChecked((prevValue) => {
+      return { ...prevValue, inputField: existingUser?.marketingInd || false };
     });
   }, [existingUser]);
 
@@ -135,7 +139,7 @@ const NewCustomer = ({ existingUser }) => {
     console.log({ result }, result.payload);
 
     if (response.ok) {
-      console.log("customer added successfully");
+      console.log("customer added/edited successfully");
       addcustomertocart(result.payload);
       pos.dispatch(Pos.Action.CLOSE);
     } else {
