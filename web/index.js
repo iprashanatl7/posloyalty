@@ -151,7 +151,7 @@ export async function createServer(
    
     let status = 200;
     let error = null;
-    
+
     try{
       const session = await Shopify.Utils.loadCurrentSession(
         req,
@@ -303,14 +303,33 @@ export async function createServer(
       action_id: "123ABC",
       value: "0",
     };
-
+    try{
+      const reqinfo = req.body;
+      console.log(reqinfo)
+      const id = reqinfo.customer_id
+      console.log(`ID ------------> ${id}`)
+      const session = await Shopify.Utils.loadCurrentSession(
+        req,
+        res,
+        app.get("use-online-tokens")
+      );
+      var response = JSON.parse(await getLoyaltyInfo(session,id));
+      var points = response.points_total;
+      var tier = response.loyalty_tier;
+      var balance =   response,points_pending;
+      console.log(`points ------------> ${points}`)
+      console.log(`tier ------------> ${tier}`)
+      console.log(`balance ------------> ${balance}`)
+    }catch(e){
+      console.log(`Error while getting the meta data ${e.message}`, e)
+    }
+   
     const promotions = {
       type: "simple_action_list",
       points_label: "Access Plus",
       points_balance: "125",
       actions: [],
     };
-
     promotions.actions.push(action);
 
     res.status(200).json(promotions);
