@@ -303,6 +303,10 @@ export async function createServer(
       action_id: "123ABC",
       value: "0",
     };
+    
+    let points = "0";
+    let tier = "No tier";
+    let balance =   "0";
     try{
       const reqinfo = req.body;
       console.log(reqinfo)
@@ -313,10 +317,11 @@ export async function createServer(
         res,
         app.get("use-online-tokens")
       );
-      var response = JSON.parse(await getLoyaltyInfo(session,id));
-      var points = response.points_total;
-      var tier = response.loyalty_tier;
-      var balance =   response,points_pending;
+      const response = JSON.parse(await getLoyaltyInfo(session,id));
+      points = response.points_total;
+      tier = response.loyalty_tier;
+      balance =   response.points_pending;
+      
       console.log(`points ------------> ${points}`)
       console.log(`tier ------------> ${tier}`)
       console.log(`balance ------------> ${balance}`)
@@ -326,8 +331,8 @@ export async function createServer(
    
     const promotions = {
       type: "simple_action_list",
-      points_label: "Access Plus",
-      points_balance: "125",
+      points_label: tier,
+      points_balance: balance,
       actions: [],
     };
     promotions.actions.push(action);
@@ -384,7 +389,7 @@ export async function createServer(
       phone: customerInfo?.phone || "",
       id: customerInfo?.id || "",
       marketingInd: `${
-        customerInfo?.email_marketing_consent.state === "subscribed"
+        customerInfo?.email_marketing_consent?.state === "subscribed"
           ? true
           : false
       }`,
