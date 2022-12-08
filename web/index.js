@@ -198,13 +198,13 @@ export async function createServer(
       console.log(`Search text : ${query}`);
       const userData = await Customer.search({
         session: session,
-        query: `*${query}*`,
+        limit: 20,
+        query: `${query}*`,
       });
       if (userData == null) {
         throw new Error("Not Found");
       }
-      console.log(`-----> user datat${JSON.stringify(userData)}`);
-      var retVal = getCustomerInfo(userData);
+      //var retVal = getCustomerInfo(userData);
       console.log(retVal);
       res.status(200).json({ success: status === 200, error, payload: retVal });
       console.log(`Search success, returned status code 200`);
