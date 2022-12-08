@@ -204,8 +204,8 @@ export async function createServer(
       if (userData == null) {
         throw new Error("Not Found");
       }
-      //var retVal = getCustomerInfo(userData);
-      console.log(retVal);
+      var retVal = getCustomerInfo(userData);
+      //console.log(retVal);
       res.status(200).json({ success: status === 200, error, payload: retVal });
       console.log(`Search success, returned status code 200`);
     } catch (e) {
